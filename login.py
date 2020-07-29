@@ -4,7 +4,7 @@ class Login():
     def __init__(self):
         self.bd = Banco()
 
-
+    # VERIFICANDO LOGIN E SENHA CADASTRADA    login: Marcel Senha: 1234
     def verificaLogin(self, user, password):
         setUser = self.bd.findOne("clientes", "clientes_nome", user)
 

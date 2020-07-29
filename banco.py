@@ -60,7 +60,7 @@ class Banco():
         retorno = resposta.fetchall()
         self.__conecta.commit()
         return retorno
-
+    
     def delete(self, tabela, id, name):
         resposta = self.__banco.execute("delete from "+tabela+" where "+id+" == "+name)
         self.__conecta.commit()
@@ -93,7 +93,7 @@ class Banco():
                          (clientes_id integer primary key, clientes_nome text, clientes_cpf int, clientes_senha int, clientes_date text)''')
 
             self.__banco.execute('''CREATE TABLE enderecos
-                         (enderecos_id integer primary key, enderecos_cep int, enderecos_rua text, enderecos_numero int, enderecos_bairro text, enderecos_complemento text, enderecos_cidade text, enderecos_id_pedidos int, enderecos_estado, enderecos_data text,
+                         (enderecos_id integer primary key, enderecos_cep int, enderecos_rua text, enderecos_numero text, enderecos_bairro text, enderecos_complemento text, enderecos_cidade text, enderecos_id_pedidos int, enderecos_estado, enderecos_data text,
                          FOREIGN KEY(enderecos_id_pedidos) REFERENCES pedidos(pedidos_id))''')
 
             self.__banco.execute('''CREATE TABLE pedidos

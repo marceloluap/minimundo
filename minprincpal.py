@@ -6,7 +6,7 @@ class EmpresaVendas():
 
     def __init__(self):
         # nova linha
-         self.__bd = Banco()
+         self.__bd = Banco()# ENCAPSULAMENTO DUPLO UNDERSCORE
 
 
     def comprar(self, item, forma, totalCompra):
@@ -48,7 +48,7 @@ class EmpresaVendas():
 
 
     def registrarVenda(self, lista):
-        # CHAMANDO FUNÇÃO CREAT PARA INSERT NA TABELA VENDAS
+        # CHAMANDO FUNÇÃO CREATED PARA INSERT NA TABELA VENDAS
         venda = self.__bd.created("vendas", "(vendas_id_pedidos, vendas_total, vendas_recebido, vendas_troco, vendas_tipo_pagamento, vendas_data)", '({}, {}, {}, {}, {}, {})'.format(lista[0], lista[1], 0, 0, lista[2], str(date.today())))
         return venda.lastrowid
 
@@ -56,18 +56,18 @@ class EmpresaVendas():
         total = self.__bd.findOne("vendas", "vendas_id", id)
         return total[2]
 
-    # CHAMANDO CREATED PARA INSERIR = INSERT
+    # CHAMANDO CREATED PARA INSERIR = INSERT NO BANCO
 
     def enderecoEntrega(self, dados):
-        endereco = self.__bd.created('enderecos', '(enderecos_cep, enderecos_rua, enderecos_numero, enderecos_bairro, enderecos_complemento, enderecos_cidade, enderecos_id_pedidos, enderecos_estado, enderecos_data)', '({}, "{}", {}, "{}", "{}", "{}", {}, "{}", "{}")'.format(int(dados[0]), dados[1], int(dados[2]), dados[3], dados[4], dados[5], dados[6][0], dados[7], str(date.today())))
+        endereco = self.__bd.created('enderecos', '(enderecos_cep, enderecos_rua, enderecos_numero, enderecos_bairro, enderecos_complemento, enderecos_cidade, enderecos_id_pedidos, enderecos_estado, enderecos_data)', '({}, "{}", "{}", "{}", "{}", "{}", {}, "{}", "{}")'.format(int(dados[0]), dados[1], dados[2], dados[3], dados[4], dados[5], dados[6][0], dados[7], str(date.today())))
         return endereco.lastrowid
 
-
+    # ENCAPSULAMENTO DUPLO UNDERSCORE
     def getPedido(self, id):
         pedido = self.__bd.joinTable("itemPedidos_quantidade, produtos_preco", "itemPedidos", "produtos", "itemPedidos_id_produtos", "produtos_id", "itemPedidos_id_pedidos", id)
         return pedido
 
-
+    # ENCAPSULAMENTO DUPLO UNDERSCORE
     def sairBanco(self):
         self.__bd.closeBD()
 

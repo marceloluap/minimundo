@@ -10,7 +10,7 @@ class TelaPython:
         telaLogin = self.telaLogin()
         if telaLogin == True:
             # INSTANCIANDO CLASSE DO MODULO MINPRINCIAL.PY  
-            self.venda = EmpresaVendas()
+            self._venda = EmpresaVendas()# # ENCAPSULAMENTO UMA UNDERSCORE
             # INICIANDO TELA PRINCIPAL
             self.Iniciar()
         elif telaLogin == "Sair":
@@ -29,6 +29,8 @@ class TelaPython:
                         [sg.Text('', size=(1, 1))],
                         [sg.Text('', size=(12, 1)), sg.Button('Entrar', size=(20, 2), border_width=0, font=('Helvetica', 12), key='entrar', button_color=('WHITE', 'dark slate gray')), sg.Button('Sair', size=(20, 2), font=('Helvetica', 12), key='sair', button_color=('White', 'Red'), border_width=0)]]
         win4 = sg.Window('Tela de Login', layout4)
+        
+        # PADRAO PYSIMPLEGUI PARA CAPTURAR ENTRADA DE DADOS
         while True:
             ev3, vals3 = win4.Read()
 
@@ -55,7 +57,7 @@ class TelaPython:
         
     # TELA PRINCIPAL APOS O LOGIN
     def Iniciar(self):
-            self.produtos = self.venda.mostrarLista()
+            self.produtos = self._venda.mostrarLista()
             self.totalSomado = '0,00'
             self.selecionado = []
             headings = ['COD.', 'NOME PROD.', 'VALOR UNI.', 'QUANTIDADE', 'VALOR TOTAL']
@@ -78,6 +80,8 @@ class TelaPython:
             ] + table + valorTotal
 
             self.janela = sg.Window("PROGRAMA DE VENDA ONLINE",  size=(1080,680)).layout(layout)
+            
+            
             while True:
                 self.event, self.values = self.janela.Read(timeout=100)
 
@@ -93,10 +97,10 @@ class TelaPython:
 
 
                 if self.event is None or self.event == "Sair":
-                    self.venda.sairBanco()
+                    self._venda.sairBanco()
                     break
                 if self.values['Produtos'] != "":
-                    valores = self.venda.mostrarValores(self.values['Produtos'])
+                    valores = self._venda.mostrarValores(self.values['Produtos'])
                     self.janela.FindElement("ValorUn").Update('R$ '+self.dinheiroFormat(valores[2]))
 
 
@@ -113,7 +117,7 @@ class TelaPython:
                         sg.popup_ok('Você deve selecionar ao menos 1 produto!', title="Alerta!")
                     else:
                         self.dados.append(self.selecionado)
-                        val = self.venda.totalCompra(self.dados)
+                        val = self._venda.totalCompra(self.dados)
                         self.totalSomado = self.dinheiroFormat(str(val))
                         self.janela.FindElement("Table").Update(self.dados)
                         self.janela.FindElement("Soma").Update('  R$  ' + self.totalSomado)
@@ -139,19 +143,19 @@ class TelaPython:
                             setPagamento = self.telaPagamento(self.dados, result)
 
                             if type(setPagamento) == float:
-                                idPedido = self.venda.comprar(self.dados, result, setPagamento)
+                                idPedido = self._venda.comprar(self.dados, result, setPagamento)
                                 if idPedido != 0:
                                    endereco = self.telaEndereco(idPedido)
                                    if endereco != 0:
                                        tipoPagamento = result
                                        dadosVenda = [idPedido[0], setPagamento, tipoPagamento]
-                                       venda = self.venda.registrarVenda(dadosVenda)
+                                       venda = self._venda.registrarVenda(dadosVenda)
                                        if venda > 0:
                                             status = self.telaRegistroDeVenda(venda)
                                             if status == True:
                                                 self.reset()
                                             else:
-                                                self.venda.sairBanco()
+                                                self._venda.sairBanco()
                                                 break
 
                                        else:
@@ -183,6 +187,8 @@ class TelaPython:
                         [sg.Text('', size=(1, 1))]]
         win2 = sg.Window('Window 2', layout2)
 
+
+        #  PADRAO PYSIMPLEGUI PARA CAPTURAR ENTRADA DE DADOS
         while True:
             ev2, vals2 = win2.Read()
             if ev2 == sg.WIN_CLOSED or ev2 == 'CancelarCompra':
@@ -191,9 +197,13 @@ class TelaPython:
 
             if ev2 == 'Salvar':
                 dados = [vals2['cep'], vals2['rua'], vals2['num'], vals2['bairro'], vals2['complemento'], vals2['cidade'], pedido, vals2['estado']]
-                retorno = self.venda.enderecoEntrega(dados)
-                win2.Close()
-                break
+                dadosVerificado = self.verificaEndereco(dados)
+                if dadosVerificado == True:
+                    retorno = self._venda.enderecoEntrega(dados)
+                    win2.Close()
+                    break
+  
+
         return retorno
 
     def telaFormasDePagamento(self):
@@ -240,13 +250,13 @@ class TelaPython:
 
 
     def telaPagamento(self, dados, pedido):
-        soma =  self.venda.totalCompra(dados)
+        soma =  self._venda.totalCompra(dados)
         if pedido == 1:
             self.tipoPagamento = "Dinheiro"
-            total = self.venda.pagamento(pedido, soma)
+            total = self._venda.pagamento(pedido, soma)
         else:
             self.tipoPagamento = "Cartão(+0.02%)"
-            total = self.venda.pagamento(pedido, soma)
+            total = self._venda.pagamento(pedido, soma)
 
         layout = [[sg.Text("", size=(10,1)), sg.Text('Pagamento em {}'.format(self.tipoPagamento), size=(30,1), justification='center', font=('Helvetica', 18), background_color='#7371FC', text_color='#FFFFFF'), sg.Text("", size=(10,1))],
                   [sg.Text("", size=(10, 2))],
@@ -266,7 +276,7 @@ class TelaPython:
 
     def telaRegistroDeVenda(self, venda):
 
-        total = self.venda.getTotalVenda(venda)
+        total = self._venda.getTotalVenda(venda)
         headings = ['COD.', 'NOME PROD.', 'VALOR UNI.', 'QUANTIDADE', 'VALOR TOTAL']
         dadosLista = self.dados
         table = [[sg.Table(values=dadosLista, headings=headings, def_col_width=23, auto_size_columns=False,
@@ -295,6 +305,12 @@ class TelaPython:
             return False
         if event == 'venda':
             window.Close()
+            return True
+    def verificaEndereco(self, dados):
+        if dados[0].isdigit() == False:
+            sg.popup_ok('Você deve colocar somente números no campo de CEP', title="Alerta!")
+            return False
+        else:
             return True
 
     def dinheiroFormat(self, valor):
